@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 import 'account_settings_screen.dart';
+import '../controllers/data_controller.dart';
 
 class AccountProfileScreen extends StatelessWidget {
   const AccountProfileScreen({super.key});
@@ -20,33 +22,40 @@ class AccountProfileScreen extends StatelessWidget {
                   gradient: AppColors.primaryGradient,
                 ),
                 child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-                      Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
+                  child: Consumer<DataController>(
+                      builder: (context, controller, _) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 3),
+                          ),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage:
+                                controller.currentUser.profilePic != null
+                                    ? NetworkImage(
+                                        controller.currentUser.profilePic!)
+                                    : const NetworkImage(
+                                        'https://i.pravatar.cc/150?u=nipa'),
+                          ),
                         ),
-                        child: const CircleAvatar(
-                          radius: 50,
-                          backgroundImage:
-                              NetworkImage('https://i.pravatar.cc/150?u=nipa'),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text('Nipa Mishra',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold)),
-                      const Text('nipamishra169@gmail.com',
-                          style:
-                              TextStyle(color: Colors.white70, fontSize: 14)),
-                    ],
-                  ),
+                        const SizedBox(height: 16),
+                        Text(controller.currentUser.name,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold)),
+                        Text(controller.currentUser.email,
+                            style: const TextStyle(
+                                color: Colors.white70, fontSize: 14)),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),

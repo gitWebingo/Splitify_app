@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
+import '../controllers/data_controller.dart';
+import '../models/group_model.dart';
 import 'group_detail_screen.dart';
+import 'create_group_screen.dart';
 
 class HomeGroupsScreen extends StatelessWidget {
   const HomeGroupsScreen({super.key});
@@ -8,115 +12,110 @@ class HomeGroupsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Unique App Bar with Gradient
-          SliverAppBar(
-            expandedHeight: 200,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Spacer(),
-                        const Text('Welcome back,',
-                            style:
-                                TextStyle(color: Colors.white70, fontSize: 14)),
-                        const SizedBox(height: 2),
-                        const Text('Nipa',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        _buildQuickStats(),
-                        const SizedBox(height: 8),
-                      ],
+      body: Consumer<DataController>(builder: (context, dataController, child) {
+        return CustomScrollView(
+          slivers: [
+            // Unique App Bar with Gradient
+            SliverAppBar(
+              expandedHeight: 200,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                  ),
+                  child: SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const Spacer(),
+                          const Text('Welcome back,',
+                              style: TextStyle(
+                                  color: Colors.white70, fontSize: 14)),
+                          const SizedBox(height: 2),
+                          Text(dataController.currentUser.name,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          _buildQuickStats(dataController),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
+              actions: [
+                IconButton(
+                    icon: const Icon(Icons.search_rounded), onPressed: () {}),
+                IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    onPressed: () {}),
+              ],
             ),
-            actions: [
-              IconButton(
-                  icon: const Icon(Icons.search_rounded), onPressed: () {}),
-              IconButton(
-                  icon: const Icon(Icons.notifications_outlined),
-                  onPressed: () {}),
-            ],
-          ),
 
-          // Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Your Groups',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary)),
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.add_circle_outline, size: 20),
-                        label: const Text('New'),
-                        style: TextButton.styleFrom(
-                            foregroundColor: AppColors.primaryStart),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  _buildGroupCard(
-                      context,
-                      'Bachkunda',
-                      '4 members',
-                      'No expenses',
-                      Icons.home_rounded,
-                      AppColors.primaryGradient),
-                  _buildGroupCard(context, 'House', '3 members', 'No expenses',
-                      Icons.apartment_rounded, AppColors.accentGradient),
-                  _buildGroupCard(
-                      context,
-                      'Office trip',
-                      '6 members',
-                      'Settled up',
-                      Icons.flight_rounded,
-                      AppColors.owedGradient,
-                      isSettled: true),
-                  _buildGroupCard(
-                      context,
-                      'Personal',
-                      '2 members',
-                      'You owe \$212.50',
-                      Icons.person_rounded,
-                      AppColors.oweGradient,
-                      amount: '\$212.50'),
-                  const SizedBox(height: 100),
-                ],
+            // Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Your Groups',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary)),
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CreateGroupScreen()));
+                          },
+                          icon: const Icon(Icons.add_circle_outline, size: 20),
+                          label: const Text('New'),
+                          style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primaryStart),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    if (dataController.groups.isEmpty)
+                      const Center(
+                          child: Text("No groups yet",
+                              style: TextStyle(color: Colors.grey)))
+                    else
+                      ...dataController.groups.map((group) => _buildGroupCard(
+                            context,
+                            group,
+                          )),
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 
-  Widget _buildQuickStats() {
+  Widget _buildQuickStats(DataController controller) {
+    double owe = controller.getTotalYouOwe();
+    double owed = controller.getTotalOwedToYou();
+
     return Row(
       children: [
         Expanded(
@@ -128,12 +127,12 @@ class HomeGroupsScreen extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('You owe',
+              children: [
+                const Text('You owe',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
-                SizedBox(height: 4),
-                Text('\$212.50',
-                    style: TextStyle(
+                const SizedBox(height: 4),
+                Text('₹${owe.toStringAsFixed(2)}',
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold)),
@@ -151,12 +150,12 @@ class HomeGroupsScreen extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('Owed to you',
+              children: [
+                const Text('Owed to you',
                     style: TextStyle(color: Colors.white70, fontSize: 12)),
-                SizedBox(height: 4),
-                Text('\$0.00',
-                    style: TextStyle(
+                const SizedBox(height: 4),
+                Text('₹${owed.toStringAsFixed(2)}',
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold)),
@@ -168,13 +167,41 @@ class HomeGroupsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGroupCard(BuildContext context, String title, String members,
-      String subtitle, IconData icon, LinearGradient gradient,
-      {bool isSettled = false, String? amount}) {
+  Widget _buildGroupCard(BuildContext context, Group group) {
+    IconData icon;
+    LinearGradient gradient;
+
+    switch (group.type) {
+      case 'Home':
+        icon = Icons.home_rounded;
+        gradient = AppColors.primaryGradient;
+        break;
+      case 'Trip':
+        icon = Icons.flight_rounded;
+        gradient = AppColors.accentGradient;
+        break;
+      case 'Couple':
+        icon = Icons.favorite_rounded;
+        gradient = AppColors.owedGradient;
+        break;
+      default:
+        icon = Icons.group_rounded;
+        gradient = AppColors.oweGradient;
+    }
+
+    // Logic to calculate if settled or amount (simplified for card view)
+    // For now we just show generic message or "settled" if no expenses
+    String subtitle = group.expenses.isEmpty
+        ? 'No expenses'
+        : '${group.expenses.length} expenses';
+    bool isSettled = group.expenses.isEmpty;
+
     return InkWell(
       onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const GroupDetailScreen()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => GroupDetailScreen(group: group)));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -203,20 +230,22 @@ class HomeGroupsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
+                    Text(group.name,
                         style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary)),
                     const SizedBox(height: 4),
-                    Text(members,
+                    Text(group.memberNames,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontSize: 13, color: AppColors.textSecondary)),
                     const SizedBox(height: 8),
                     Text(subtitle,
                         style: TextStyle(
                             fontSize: 14,
-                            color: amount != null
+                            color: !isSettled
                                 ? AppColors.owe
                                 : AppColors.textSecondary,
                             fontWeight: FontWeight.w500)),
@@ -224,15 +253,6 @@ class HomeGroupsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            if (amount != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Text(amount,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.owe)),
-              ),
           ],
         ),
       ),

@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Modern Dark Theme - Unique to Splitify
-  static const Color background = Color(0xFF0A0E27); // Deep Space Blue
-  static const Color surface = Color(0xFF151B3D); // Midnight Blue
-  static const Color card = Color(0xFF1E2749); // Slate Blue
+  // Image-Inspired Palette: Midnight Charcoal + Vibrant Emerald
+  static const Color background = Color(0xFF0B0E11); // Deep Midnight Charcoal
+  static const Color surface = Color(0xFF1C1F22); // Field/Card Background
+  static const Color card = Color(0xFF1C1F22); // Consistent dark cards
 
-  // Unique Gradient Accent System
-  static const Color primaryStart = Color(0xFF6366F1); // Indigo
-  static const Color primaryEnd = Color(0xFF8B5CF6); // Purple
-  static const Color accentStart = Color(0xFF10B981); // Emerald
-  static const Color accentEnd = Color(0xFF06B6D4); // Cyan
+  static const Color mainColor = Color(0xFF00A86B); // Vibrant Emerald Green
+  static const Color accent = Color(0xFF00A86B);
+  static const Color secondaryColor = Color(0xFF666D74); // Slate Grey
+  static const Color lightColor = Color(0xFFFFFFFF); // Pure White
 
-  // Alias for compatibility
-  static const Color accent = primaryStart;
+  static const Color primaryStart = mainColor;
+  static const Color primaryEnd = Color(0xFF008D5A); // Deep Green
+  static const Color accentStart = mainColor;
+  static const Color accentEnd = Color(0xFF008D5A);
 
   // Status Colors
-  static const Color owe = Color(0xFFEF4444); // Red
-  static const Color owed = Color(0xFF10B981); // Green
-  static const Color settled = Color(0xFF8B5CF6); // Purple
+  static const Color owe = Color(0xFFEF4444); // Pure Red
+  static const Color owed = mainColor; // Emerald Green
+  static const Color settled = secondaryColor;
 
   // Text Hierarchy
-  static const Color textPrimary = Color(0xFFF9FAFB);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color textDisabled = Color(0xFF475569);
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF7C8187); // Soft Grey
+  static const Color textDisabled = Color(0xFF3F444A);
 
-  // Unique Gradients
+  // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primaryStart, primaryEnd],
     begin: Alignment.topLeft,
@@ -39,19 +40,19 @@ class AppColors {
   );
 
   static const LinearGradient cardGradient = LinearGradient(
-    colors: [Color(0xFF1E2749), Color(0xFF151B3D)],
+    colors: [surface, background],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient oweGradient = LinearGradient(
-    colors: [Color(0xFFEF4444), Color(0xFFF97316)],
+    colors: [owe, Color(0xFFB91C1C)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient owedGradient = LinearGradient(
-    colors: [Color(0xFF10B981), Color(0xFF06B6D4)],
+    colors: [owed, Color(0xFF006D45)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

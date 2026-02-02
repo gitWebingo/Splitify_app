@@ -7,12 +7,13 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.background,
-      primaryColor: AppColors.accent,
-      splashColor: AppColors.accent.withOpacity(0.1),
+      primaryColor: AppColors.mainColor,
+      splashColor: AppColors.mainColor.withOpacity(0.1),
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.accent,
+        primary: AppColors.mainColor,
+        onPrimary: AppColors.textPrimary,
+        secondary: AppColors.mainColor,
         surface: AppColors.surface,
-        secondary: AppColors.accent,
         onSurface: AppColors.textPrimary,
       ),
       textTheme:
@@ -56,30 +57,31 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors.textPrimary),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.accent,
+        backgroundColor: AppColors.background,
+        selectedItemColor: AppColors.mainColor,
         unselectedItemColor: AppColors.textDisabled,
         selectedLabelStyle:
             TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
         unselectedLabelStyle:
             TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
         type: BottomNavigationBarType.fixed,
-        elevation: 10,
+        elevation: 0,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColors.accent,
-        foregroundColor: Colors.black,
-        elevation: 6,
+        backgroundColor: AppColors.mainColor,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 4,
         extendedTextStyle:
             const TextStyle(fontWeight: FontWeight.w800, letterSpacing: 0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       cardTheme: CardTheme(
-        color: AppColors.surface,
+        color: AppColors.card,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.white10, width: 1),
+          side: BorderSide(
+              color: AppColors.textPrimary.withOpacity(0.05), width: 1),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -93,11 +95,12 @@ class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.white10, width: 1),
+          borderSide: BorderSide(
+              color: AppColors.textPrimary.withOpacity(0.05), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: AppColors.accent, width: 1),
+          borderSide: const BorderSide(color: AppColors.mainColor, width: 1),
         ),
       ),
     );

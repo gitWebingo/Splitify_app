@@ -4,6 +4,7 @@ import 'friends_list_screen.dart';
 import 'activity_feed_screen.dart';
 import 'account_profile_screen.dart';
 import '../core/app_colors.dart';
+import 'create_group_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -104,13 +105,13 @@ class _MainLayoutState extends State<MainLayout> {
         ),
       ),
       floatingActionButton: _selectedIndex < 2 ? _buildUniqueFAB() : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
   Widget _buildUniqueFAB() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 80),
+      margin: const EdgeInsets.only(bottom: 30, right: 10),
       decoration: BoxDecoration(
         gradient: AppColors.primaryGradient,
         borderRadius: BorderRadius.circular(20),
@@ -123,11 +124,16 @@ class _MainLayoutState extends State<MainLayout> {
         ],
       ),
       child: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const CreateGroupScreen()));
+        },
         backgroundColor: Colors.transparent,
         elevation: 0,
-        icon: const Icon(Icons.add_rounded, size: 28),
-        label: const Text('Add Expense',
+        icon: const Icon(Icons.group_add_rounded, size: 28),
+        label: const Text('New Group',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
       ),
     );
