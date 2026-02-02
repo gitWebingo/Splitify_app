@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/app_colors.dart';
+import '../models/expence_model.dart';
 import '../models/group_model.dart';
 import '../models/user_model.dart';
-import '../models/expense_model.dart';
 import '../controllers/data_controller.dart';
 
 class AddExpenseScreen extends StatefulWidget {

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../core/app_colors.dart';
 import '../controllers/data_controller.dart';
-import '../models/expense_model.dart';
 import '../models/group_model.dart';
 
 class ActivityFeedScreen extends StatelessWidget {

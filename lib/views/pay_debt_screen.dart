@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
-import '../models/user_model.dart';
-import '../models/expense_model.dart'; // For creating expense object
+import '../models/expence_model.dart';
+import '../models/user_model.dart'; // For creating expense object
 import '../controllers/data_controller.dart';
 
 class PayDebtScreen extends StatefulWidget {
