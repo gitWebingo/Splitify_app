@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../core/app_colors.dart';
 import '../models/expence_model.dart';
-import '../models/user_model.dart'; // For creating expense object
+import '../models/user_model.dart';
 import '../controllers/data_controller.dart';
 
 class PayDebtScreen extends StatefulWidget {
   final User targetUser;
-  final String?
-      groupId; // Optional context, mostly for recording where it happened
+  final String? groupId;
 
   const PayDebtScreen({super.key, required this.targetUser, this.groupId});
 
@@ -35,9 +35,6 @@ class _PayDebtScreenState extends State<PayDebtScreen> {
     final controller = Provider.of<DataController>(context, listen: false);
     final currentUser = controller.currentUser;
 
-    // Create a payment expense
-    // Payer: Current User
-    // Split: Target User (100%)
     final expense = Expense(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       description: 'Payment to ${widget.targetUser.name}',
@@ -47,19 +44,10 @@ class _PayDebtScreenState extends State<PayDebtScreen> {
       splitBetween: [widget.targetUser.id],
     );
 
-    // If we have a groupId, add to that group. If not, finding a common group or creating a "Non-group" expense is tricky in current model.
-    // For now, let's assume valid groupId is passed or we default to first shared group (logic to be enhanced).
-    // If no groupId passed, we just pick the first group they are both in for this prototype?
-    // Or we require groupId.
-    // To make it robust, let's try to find a group or use a fallback.
     String? effectiveGroupId = widget.groupId;
-
     if (effectiveGroupId == null) {
-      // Try to find a group they share
       for (var g in controller.groups) {
-        bool hasTarget = g.members.any((m) => m.id == widget.targetUser.id);
-        // Current user is always in group by definition of controller.groups (if fetching my groups)
-        if (hasTarget) {
+        if (g.members.any((m) => m.id == widget.targetUser.id)) {
           effectiveGroupId = g.id;
           break;
         }
@@ -83,129 +71,180 @@ class _PayDebtScreenState extends State<PayDebtScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          icon: const Icon(Icons.arrow_back_ios_new_rounded,
+              color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text('Pay off the debt',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text('Settle Up',
+            style: GoogleFonts.outfit(
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                fontSize: 18)),
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                _buildFlowCard(currentUser, widget.targetUser),
-                const SizedBox(height: 24),
-                _buildAmountField(),
-                const SizedBox(height: 12),
-                const Text('It is possible to pay off a debt in part',
-                    style: TextStyle(
-                        color: AppColors.textDisabled,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500)),
-              ],
-            ),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+          child: Column(
+            children: [
+              _buildFlowBar(currentUser, widget.targetUser),
+              const SizedBox(height: 32),
+              _buildAmountInput(),
+              const SizedBox(height: 16),
+              Text(
+                  'Payments are recorded as expenses between you and ${widget.targetUser.name}',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.textDisabled,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5)),
+              const SizedBox(height: 100), // Space for floating button
+            ],
           ),
-          _buildPayButton(),
-        ],
+        ),
       ),
+      bottomNavigationBar: _buildPayAction(),
     );
   }
 
-  Widget _buildFlowCard(User payer, User receiver) {
+  Widget _buildFlowBar(User payer, User receiver) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: AppColors.primaryLight,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.mainColor.withOpacity(0.1)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildUserBox(payer),
-          const Icon(Icons.arrow_forward_rounded,
-              color: AppColors.textDisabled),
-          _buildUserBox(receiver),
+          _buildUserAvatar(payer),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.arrow_forward_rounded,
+                color: AppColors.mainColor, size: 20),
+          ),
+          _buildUserAvatar(receiver),
         ],
       ),
     );
   }
 
-  Widget _buildUserBox(User user) {
-    return Row(
+  Widget _buildUserAvatar(User user) {
+    return Column(
       children: [
-        CircleAvatar(
-            radius: 16,
-            backgroundImage: user.profilePic != null
-                ? NetworkImage(user.profilePic!)
-                : NetworkImage('https://i.pravatar.cc/150?u=${user.name}')),
-        const SizedBox(width: 8),
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 3),
+            ),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            backgroundImage:
+                user.profilePic != null ? NetworkImage(user.profilePic!) : null,
+            child: user.profilePic == null
+                ? Text(user.name[0],
+                    style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.mainColor,
+                        fontSize: 22))
+                : null,
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(user.name,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                fontSize: 13)),
       ],
     );
   }
 
-  Widget _buildAmountField() {
+  Widget _buildAmountInput() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
-          const Icon(Icons.account_balance_wallet_outlined,
-              color: AppColors.textSecondary),
-          const SizedBox(width: 12),
+          Text('₹',
+              style: GoogleFonts.outfit(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.mainColor)),
+          const SizedBox(width: 16),
           Expanded(
             child: TextField(
               controller: _amountController,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              style: GoogleFonts.outfit(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: '0.00',
-                hintStyle: TextStyle(color: AppColors.textDisabled),
+                hintStyle:
+                    TextStyle(color: AppColors.textDisabled.withOpacity(0.3)),
               ),
             ),
           ),
-          const Text('INR',
-              style: TextStyle(
-                  color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  Widget _buildPayButton() {
+  Widget _buildPayAction() {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.all(24),
-        child: SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: _handlePayment,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accent,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white.withOpacity(0.0), Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ElevatedButton(
+          onPressed: _handlePayment,
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.zero,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            elevation: 0,
+          ),
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text('Pay off the debt',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            child: Container(
+              height: 60,
+              alignment: Alignment.center,
+              child: Text('RECORD PAYMENT',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1)),
+            ),
           ),
         ),
       ),

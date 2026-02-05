@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../core/app_colors.dart';
 import '../controllers/data_controller.dart';
 import '../models/group_model.dart';
@@ -11,20 +12,17 @@ class ActivityFeedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: Consumer<DataController>(builder: (context, controller, child) {
-        // Get all expenses and group creations (simplified to just expenses and groups logic if possible,
-        // but for now let's just list expenses as activity items)
         List<ActivityItem> activities = [];
 
         for (var group in controller.groups) {
-          // Add Group Created event (simulated based on first expense or just skip for now as we don't have createdDate in Group)
-          // We'll focus on expenses
           for (var expense in group.expenses) {
             activities.add(ActivityItem(
               type: 'Expense',
-              title: 'Expense Added',
+              title: 'New Expense',
               subtitle:
-                  '${expense.payer.name} added "${expense.description}" in "${group.name}"',
+                  '${expense.payer.name} added "${expense.description}" in ${group.name}',
               date: expense.date,
               amount: expense.amount,
               icon: Icons.receipt_long_rounded,
@@ -36,28 +34,24 @@ class ActivityFeedScreen extends StatelessWidget {
         activities.sort((a, b) => b.date.compareTo(a.date));
 
         return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverAppBar(
-              expandedHeight: 120,
+              expandedHeight: 140,
               floating: false,
               pinned: true,
+              backgroundColor: AppColors.mainColor,
+              elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text('Activity Feed',
+                    style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800)),
                 background: Container(
                   decoration: const BoxDecoration(
                     gradient: AppColors.primaryGradient,
-                  ),
-                  child: const SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text('Activity',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -65,11 +59,23 @@ class ActivityFeedScreen extends StatelessWidget {
             activities.isEmpty
                 ? SliverFillRemaining(
                     child: Center(
-                        child: Text("No activity yet",
-                            style: TextStyle(color: Colors.grey))))
+                        child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.history_toggle_off_rounded,
+                          size: 64,
+                          color: AppColors.textDisabled.withOpacity(0.3)),
+                      const SizedBox(height: 16),
+                      Text("No recent activity",
+                          style: GoogleFonts.plusJakartaSans(
+                              color: AppColors.textDisabled,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  )))
                 : SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: _buildTimeline(activities),
@@ -103,98 +109,95 @@ class ActivityFeedScreen extends StatelessWidget {
     }
 
     if (todayItems.isNotEmpty) {
-      widgets.add(_buildTimelineSection(
-          'Today',
-          todayItems
-              .map((e) =>
-                  _buildActivityCard(e, DateFormat('h:mm a').format(e.date)))
-              .toList()));
-      widgets.add(const SizedBox(height: 24));
+      widgets.add(_buildTimelineHeader('TODAY'));
+      widgets.addAll(todayItems.map(
+          (e) => _buildActivityCard(e, DateFormat('h:mm a').format(e.date))));
+      widgets.add(const SizedBox(height: 15));
     }
     if (yesterdayItems.isNotEmpty) {
-      widgets.add(_buildTimelineSection(
-          'Yesterday',
-          yesterdayItems
-              .map((e) =>
-                  _buildActivityCard(e, DateFormat('h:mm a').format(e.date)))
-              .toList()));
-      widgets.add(const SizedBox(height: 24));
+      widgets.add(_buildTimelineHeader('YESTERDAY'));
+      widgets.addAll(yesterdayItems.map(
+          (e) => _buildActivityCard(e, DateFormat('h:mm a').format(e.date))));
+      widgets.add(const SizedBox(height: 15));
     }
     if (olderItems.isNotEmpty) {
-      widgets.add(_buildTimelineSection(
-          'Older',
-          olderItems
-              .map((e) =>
-                  _buildActivityCard(e, DateFormat('MMM d').format(e.date)))
-              .toList()));
+      widgets.add(_buildTimelineHeader('OLDER'));
+      widgets.addAll(olderItems.map(
+          (e) => _buildActivityCard(e, DateFormat('MMM d').format(e.date))));
     }
     return widgets;
   }
 
-  Widget _buildTimelineSection(String title, List<Widget> activities) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(title,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 1)),
-        ),
-        ...activities,
-      ],
+  Widget _buildTimelineHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 16),
+      child: Text(title,
+          style: GoogleFonts.plusJakartaSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textDisabled,
+              letterSpacing: 2)),
     );
   }
 
   Widget _buildActivityCard(ActivityItem item, String time) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 60,
-            height: 80,
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              gradient: item.gradient,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                bottomLeft: Radius.circular(16),
-              ),
+              color: AppColors.primaryLight,
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(item.icon, color: Colors.white, size: 24),
+            child: Icon(item.icon, color: AppColors.mainColor, size: 22),
           ),
+          const SizedBox(width: 16),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(item.title,
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary)),
-                  const SizedBox(height: 4),
-                  Text(item.subtitle,
-                      style: const TextStyle(
-                          fontSize: 13, color: AppColors.textSecondary)),
-                ],
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(item.title,
+                        style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary)),
+                    Text(time,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13,
+                            color: AppColors.textDisabled,
+                            fontWeight: FontWeight.w700)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(item.subtitle,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                        fontWeight: FontWeight.w500)),
+                if (item.amount > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text('₹${item.amount.toStringAsFixed(2)}',
+                        style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.mainColor)),
+                  ),
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Text(time,
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textDisabled)),
           ),
         ],
       ),

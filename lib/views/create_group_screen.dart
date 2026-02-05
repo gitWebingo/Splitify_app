@@ -21,8 +21,6 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   @override
   void initState() {
     super.initState();
-    // Use addPostFrameCallback to handle Provider context safely if needed,
-    // but for simple non-listening access, we can do it here if controller is ready.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentUser =
           Provider.of<DataController>(context, listen: false).currentUser;
@@ -41,63 +39,76 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       body: Stack(
         children: [
           CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
-                expandedHeight: 160,
+                expandedHeight: 180,
                 floating: false,
                 pinned: true,
-                backgroundColor: AppColors.background,
+                backgroundColor: AppColors.mainColor,
                 elevation: 0,
-                leading: const BackButton(color: AppColors.textPrimary),
+                leading: const BackButton(color: Colors.white),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
-                  title: Text('New Group',
+                  title: Text('Create Group',
                       style: GoogleFonts.outfit(
-                        color: AppColors.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                        letterSpacing: -0.5,
+                        fontSize: 20,
                       )),
                   background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.mainColor.withOpacity(0.15),
-                          AppColors.background
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
                     ),
                     child: Center(
-                      child: Opacity(
-                        opacity: 0.1,
-                        child: Icon(Icons.group_add_rounded,
-                            size: 100, color: AppColors.mainColor),
-                      ),
+                      child: Icon(Icons.group_add_rounded,
+                          size: 80, color: Colors.white.withOpacity(0.2)),
                     ),
                   ),
                 ),
               ),
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      _buildSectionTitle('GROUP DETAILS'),
-                      const SizedBox(height: 16),
-                      _buildNameInput(),
-                      const SizedBox(height: 32),
-                      _buildSectionTitle('CATEGORY'),
-                      const SizedBox(height: 16),
-                      _buildTypeSelector(),
-                      const SizedBox(height: 32),
-                      _buildSectionTitle('ADD MEMBERS'),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // GROUP INFO Section with padding
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 30, 24, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle('GROUP INFO'),
+                          const SizedBox(height: 12),
+                          _buildNameInput(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // SELECT CATEGORY Section
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24),
+                      child: _buildSectionTitle('SELECT CATEGORY'),
+                    ),
+                    const SizedBox(height: 18),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: _buildTypeSelector(),
+                    ),
+                    const SizedBox(height: 30),
+
+                    // INVITE FRIENDS Section with padding
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle('INVITE FRIENDS'),
+                          const SizedBox(height: 12),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
               _buildMembersSliverList(),
@@ -114,9 +125,9 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     return Text(
       title,
       style: GoogleFonts.plusJakartaSans(
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: FontWeight.w800,
-        color: AppColors.textSecondary.withOpacity(0.6),
+        color: AppColors.textDisabled,
         letterSpacing: 2,
       ),
     );
@@ -125,26 +136,27 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   Widget _buildNameInput() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: TextField(
         controller: _nameController,
-        style: const TextStyle(
+        style: GoogleFonts.plusJakartaSans(
             color: AppColors.textPrimary,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w600),
         decoration: InputDecoration(
-          hintText: 'Group Name',
-          hintStyle: TextStyle(color: AppColors.textSecondary.withOpacity(0.3)),
-          prefixIcon:
-              const Icon(Icons.edit_note_rounded, color: AppColors.mainColor),
+          hintText: 'Enter group name...',
+          hintStyle: TextStyle(color: AppColors.textDisabled.withOpacity(0.7)),
+          prefixIcon: const Icon(Icons.edit_note_rounded,
+              color: AppColors.mainColor, size: 30),
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
           filled: false,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
         ),
       ),
     );
@@ -152,15 +164,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
   Widget _buildTypeSelector() {
     return SizedBox(
-      height: 110,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _types.length,
-        separatorBuilder: (c, i) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final type = _types[index];
+      width: double.infinity,
+      height: 90,
+      child: Row(
+        children: _types.asMap().entries.map((entry) {
+          final index = entry.key;
+          final type = entry.value;
           final isSelected = type == _selectedType;
           IconData icon;
+
           switch (type) {
             case 'Trip':
               icon = Icons.flight_takeoff_rounded;
@@ -175,58 +187,51 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
               icon = Icons.grid_view_rounded;
           }
 
-          return GestureDetector(
-            onTap: () => setState(() => _selectedType = type),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 95,
-              decoration: BoxDecoration(
-                color: isSelected ? AppColors.mainColor : AppColors.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.mainColor
-                      : Colors.white.withOpacity(0.05),
-                ),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppColors.mainColor.withOpacity(0.3),
-                          blurRadius: 15,
-                          offset: const Offset(0, 8),
-                        )
-                      ]
-                    : [],
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: index == 0 ? 0 : 5,
+                right: index == _types.length - 1 ? 0 : 5,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.white.withOpacity(0.2)
-                          : AppColors.background.withOpacity(0.3),
-                      shape: BoxShape.circle,
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedType = type),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  decoration: BoxDecoration(
+                    gradient: isSelected ? AppColors.primaryGradient : null,
+                    color: isSelected ? null : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? Colors.transparent : AppColors.border,
+                      width: 1.5,
                     ),
-                    child: Icon(icon,
-                        color:
-                            isSelected ? Colors.white : AppColors.textSecondary,
-                        size: 24),
                   ),
-                  const SizedBox(height: 10),
-                  Text(type,
-                      style: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(icon,
                           color: isSelected
                               ? Colors.white
-                              : AppColors.textSecondary)),
-                ],
+                              : AppColors.mainColor.withOpacity(0.7),
+                          size: 26),
+                      const SizedBox(height: 6),
+                      Text(type,
+                          style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textSecondary)),
+                    ],
+                  ),
+                ),
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
@@ -235,12 +240,14 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     return Consumer<DataController>(
       builder: (context, controller, child) {
         if (controller.friends.isEmpty) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: Center(
               child: Padding(
-                padding: EdgeInsets.all(60),
-                child: Text("No friends yet. Add some first!",
-                    style: TextStyle(color: Colors.grey)),
+                padding: const EdgeInsets.all(60),
+                child: Text("No friends available to add.",
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textDisabled,
+                        fontWeight: FontWeight.w600)),
               ),
             ),
           );
@@ -266,40 +273,39 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                         }
                       });
                     },
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(20),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.mainColor.withOpacity(0.1)
-                            : AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
+                        color:
+                            isSelected ? AppColors.primaryLight : Colors.white,
+                        borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: isSelected
                               ? AppColors.mainColor.withOpacity(0.3)
-                              : Colors.white.withOpacity(0.05),
+                              : AppColors.border,
                         ),
                       ),
                       child: Row(
                         children: [
                           Container(
-                            width: 48,
-                            height: 48,
+                            width: 50,
+                            height: 50,
                             decoration: BoxDecoration(
-                              gradient:
-                                  isSelected ? AppColors.primaryGradient : null,
-                              color: isSelected ? null : AppColors.background,
+                              color: isSelected
+                                  ? AppColors.mainColor
+                                  : AppColors.surface,
                               shape: BoxShape.circle,
                             ),
                             child: Center(
                               child: Text(friend.name[0],
-                                  style: TextStyle(
+                                  style: GoogleFonts.outfit(
                                       color: isSelected
                                           ? Colors.white
                                           : AppColors.mainColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18)),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20)),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -308,15 +314,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(friend.name,
-                                    style: const TextStyle(
+                                    style: GoogleFonts.outfit(
                                         color: AppColors.textPrimary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 19)),
                                 Text(friend.email,
-                                    style: TextStyle(
-                                        color: AppColors.textSecondary
-                                            .withOpacity(0.6),
-                                        fontSize: 12)),
+                                    style: GoogleFonts.plusJakartaSans(
+                                        color: AppColors.textDisabled,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500)),
                               ],
                             ),
                           ),
@@ -326,7 +332,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                 : Icons.add_circle_outline_rounded,
                             color: isSelected
                                 ? AppColors.mainColor
-                                : AppColors.textSecondary.withOpacity(0.3),
+                                : AppColors.textDisabled.withOpacity(0.5),
                           ),
                         ],
                       ),
@@ -349,10 +355,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.background.withOpacity(0.0),
-              AppColors.background
-            ],
+            colors: [Colors.white.withOpacity(0.0), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -363,8 +366,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             padding: EdgeInsets.zero,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 10,
-            shadowColor: AppColors.mainColor.withOpacity(0.5),
+            elevation: 0,
           ),
           child: Ink(
             decoration: BoxDecoration(
@@ -374,12 +376,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             child: Container(
               height: 60,
               alignment: Alignment.center,
-              child: const Text('Create New Group',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
+              child: Text('CREATE GROUP',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
                       color: Colors.white,
-                      letterSpacing: 0.5)),
+                      letterSpacing: 1)),
             ),
           ),
         ),

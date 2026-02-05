@@ -56,6 +56,13 @@ class DataController extends ChangeNotifier {
         members: [currentUser, friends[3]],
         expenses: [],
       ),
+      Group(
+        id: 'g3',
+        name: 'Goa Trip',
+        type: 'Trip',
+        members: [currentUser, friends[0], friends[1]],
+        expenses: [],
+      ),
     ];
 
     // Add some dummy expenses
@@ -78,6 +85,16 @@ class DataController extends ChangeNotifier {
           date: DateTime.now().subtract(const Duration(days: 1)),
           payer: friends[0], // Rahul paid
           splitBetween: ['u1', 'u2', 'u3', 'u4'],
+        ));
+    addExpense(
+        'g3',
+        Expense(
+          id: 'e3',
+          description: 'Hotel Booking',
+          amount: 5000,
+          date: DateTime.now().subtract(const Duration(days: 3)),
+          payer: friends[1], // Simran paid
+          splitBetween: ['u1', 'u2', 'u3'],
         ));
   }
 

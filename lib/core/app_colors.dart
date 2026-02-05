@@ -1,59 +1,41 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Image-Inspired Palette: Midnight Charcoal + Vibrant Emerald
-  static const Color background = Color(0xFF0B0E11); // Deep Midnight Charcoal
-  static const Color surface = Color(0xFF1C1F22); // Field/Card Background
-  static const Color card = Color(0xFF1C1F22); // Consistent dark cards
+  // THREE-COLOR PALETTE: #700F70 (Light/Primary), #5A0C5A (Dark/Text), White
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFFFFEFF);
+  static const Color card = Color(0xFFFFFFFF);
+  static const Color border =
+      Color(0xFFEFE6EF); // Extra soft purple hairline border
 
-  static const Color mainColor = Color(0xFF00A86B); // Vibrant Emerald Green
-  static const Color accent = Color(0xFF00A86B);
-  static const Color secondaryColor = Color(0xFF666D74); // Slate Grey
-  static const Color lightColor = Color(0xFFFFFFFF); // Pure White
+  // Core Purples
+  static const Color mainColorLight = Color(0xFF700F70); // Light Purple #700F70
+  static const Color mainColorDark = Color(0xFF5A0C5A); // Dark Purple #5A0C5A
 
-  static const Color primaryStart = mainColor;
-  static const Color primaryEnd = Color(0xFF008D5A); // Deep Green
-  static const Color accentStart = mainColor;
-  static const Color accentEnd = Color(0xFF008D5A);
+  // High-End Semantic Mapping
+  static const Color mainColor = mainColorLight;
+  static const Color textPrimary = mainColorDark;
 
-  // Status Colors
-  static const Color owe = Color(0xFFEF4444); // Pure Red
-  static const Color owed = mainColor; // Emerald Green
-  static const Color settled = secondaryColor;
-
-  // Text Hierarchy
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0xFF7C8187); // Soft Grey
-  static const Color textDisabled = Color(0xFF3F444A);
+  // Depth Tints (Opacities of the 2 purples to stay within the 3-color rule)
+  static final Color textSecondary = mainColorDark.withOpacity(0.65);
+  static final Color textDisabled = mainColorDark.withOpacity(0.35);
+  static final Color primaryLight = mainColorLight.withOpacity(0.08);
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryStart, primaryEnd],
+    colors: [mainColorLight, mainColorDark],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  static const LinearGradient accentGradient = LinearGradient(
-    colors: [accentStart, accentEnd],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+  static final LinearGradient softGradient = LinearGradient(
+    colors: [mainColorLight.withOpacity(0.05), Colors.white],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 
-  static const LinearGradient cardGradient = LinearGradient(
-    colors: [surface, background],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient oweGradient = LinearGradient(
-    colors: [owe, Color(0xFFB91C1C)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
-
-  static const LinearGradient owedGradient = LinearGradient(
-    colors: [owed, Color(0xFF006D45)],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-  );
+  // Forward Compatibility Mapping
+  static const Color success = mainColorLight;
+  static const Color error = mainColorDark;
+  static final Color settled = textDisabled;
 }

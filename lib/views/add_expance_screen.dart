@@ -41,65 +41,61 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       body: Stack(
         children: [
           CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
-                expandedHeight: 140,
+                expandedHeight: 180,
                 floating: false,
                 pinned: true,
-                backgroundColor: AppColors.background,
+                backgroundColor: AppColors.mainColor,
                 elevation: 0,
-                leading: const BackButton(color: AppColors.textPrimary),
+                leading: const BackButton(color: Colors.white),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
                   title: Text('Add Expense',
                       style: GoogleFonts.outfit(
-                        color: AppColors.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w800,
                         fontSize: 20,
                       )),
                   background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.mainColor.withOpacity(0.1),
-                          AppColors.background
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
+                    ),
+                    child: Center(
+                      child: Icon(Icons.receipt_long_rounded,
+                          size: 80, color: Colors.white.withOpacity(0.2)),
                     ),
                   ),
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
-                      _buildSectionHeader('DETAILS'),
+                      _buildSectionHeader('EXPENSE DETAILS'),
                       const SizedBox(height: 16),
                       _buildInputCard(
-                        'Description',
                         'What was it for?',
                         _descriptionController,
                         Icons.description_outlined,
                       ),
                       const SizedBox(height: 12),
                       _buildInputCard(
-                        'Amount',
                         '0.00',
                         _amountController,
                         Icons.currency_rupee_rounded,
                         isNumber: true,
                       ),
                       const SizedBox(height: 32),
-                      _buildSectionHeader('PAYMENT INFO'),
+                      _buildSectionHeader('PAID BY'),
                       const SizedBox(height: 16),
                       _buildPayerSelector(),
                       const SizedBox(height: 32),
-                      _buildSectionHeader('SPLIT BETWEEN'),
+                      _buildSectionHeader('SPLIT WITH'),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -119,122 +115,91 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Text(
       title,
       style: GoogleFonts.plusJakartaSans(
-        fontSize: 11,
+        fontSize: 14,
         fontWeight: FontWeight.w800,
-        color: AppColors.textSecondary.withOpacity(0.6),
+        color: AppColors.textDisabled,
         letterSpacing: 2,
       ),
     );
   }
 
-  Widget _buildInputCard(String label, String hint,
-      TextEditingController controller, IconData icon,
+  Widget _buildInputCard(
+      String hint, TextEditingController controller, IconData icon,
       {bool isNumber = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.mainColor, size: 22),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
-                TextField(
-                  controller: controller,
-                  keyboardType: isNumber
-                      ? const TextInputType.numberWithOptions(decimal: true)
-                      : TextInputType.text,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: AppColors.textPrimary),
-                  decoration: InputDecoration(
-                    hintText: hint,
-                    hintStyle: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.2)),
-                    border: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    filled: false,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                  ),
-                )
-              ],
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: TextField(
+
+        controller: controller,
+        keyboardType: isNumber
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : TextInputType.text,
+        style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: AppColors.textPrimary),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: AppColors.textDisabled.withOpacity(0.5)),
+          prefixIcon: Icon(icon, color: AppColors.mainColor),
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          filled: false,
+        ),
       ),
     );
   }
 
   Widget _buildPayerSelector() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.mainColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.account_balance_wallet_outlined,
-                size: 20, color: AppColors.mainColor),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Paid by',
-                    style: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
-                DropdownButton<User>(
-                  value: _selectedPayer,
-                  dropdownColor: AppColors.card,
-                  isExpanded: true,
-                  underline: const SizedBox(),
-                  icon: Icon(Icons.keyboard_arrow_down_rounded,
-                      color: AppColors.textSecondary.withOpacity(0.5)),
-                  items: widget.group.members.map((User member) {
-                    return DropdownMenuItem<User>(
-                      value: member,
-                      child: Text(member.name,
-                          style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16)),
-                    );
-                  }).toList(),
-                  onChanged: (User? newValue) {
-                    setState(() {
-                      _selectedPayer = newValue!;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<User>(
+          value: _selectedPayer,
+          dropdownColor: Colors.white,
+          isExpanded: true,
+          icon: Icon(Icons.keyboard_arrow_down_rounded,
+              color: AppColors.textDisabled),
+          items: widget.group.members.map((User member) {
+            return DropdownMenuItem<User>(
+              value: member,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundColor: AppColors.primaryLight,
+                    child: Text(member.name[0],
+                        style: const TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(member.name,
+                      style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16)),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (User? newValue) {
+            setState(() {
+              _selectedPayer = newValue!;
+            });
+          },
+        ),
       ),
     );
   }
@@ -261,19 +226,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     }
                   });
                 },
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(20),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppColors.mainColor.withOpacity(0.1)
-                        : AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
+                    color: isSelected ? AppColors.primaryLight : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: isSelected
                           ? AppColors.mainColor.withOpacity(0.3)
-                          : Colors.white.withOpacity(0.05),
+                          : AppColors.border,
                     ),
                   ),
                   child: Row(
@@ -284,7 +247,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.mainColor
-                              : AppColors.background,
+                              : AppColors.surface,
                           shape: BoxShape.circle,
                         ),
                         child: Center(
@@ -299,9 +262,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       const SizedBox(width: 16),
                       Expanded(
                         child: Text(member.name,
-                            style: const TextStyle(
+                            style: GoogleFonts.outfit(
                                 color: AppColors.textPrimary,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w700,
                                 fontSize: 16)),
                       ),
                       Icon(
@@ -310,7 +273,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             : Icons.add_circle_outline_rounded,
                         color: isSelected
                             ? AppColors.mainColor
-                            : AppColors.textSecondary.withOpacity(0.3),
+                            : AppColors.textDisabled.withOpacity(0.3),
                       ),
                     ],
                   ),
@@ -331,10 +294,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.background.withOpacity(0.0),
-              AppColors.background
-            ],
+            colors: [Colors.white.withOpacity(0.0), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -345,8 +305,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             padding: EdgeInsets.zero,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 10,
-            shadowColor: AppColors.mainColor.withOpacity(0.5),
+            elevation: 0,
           ),
           child: Ink(
             decoration: BoxDecoration(
@@ -356,11 +315,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             child: Container(
               height: 60,
               alignment: Alignment.center,
-              child: const Text('Add This Expense',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white)),
+              child: Text('ADD EXPENSE',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1)),
             ),
           ),
         ),
@@ -370,18 +330,19 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
   void _saveExpense() {
     final description = _descriptionController.text;
-    final amount = double.tryParse(_amountController.text);
+    final amountText = _amountController.text;
+    final amount = double.tryParse(amountText);
 
     if (description.isEmpty || amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Please enter valid description and amount')),
+            content: Text('Please enter a valid description and amount')),
       );
       return;
     }
 
     final expense = Expense(
-      id: DateTime.now().toIso8601String(),
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       description: description,
       amount: amount,
       date: DateTime.now(),

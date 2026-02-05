@@ -38,44 +38,37 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       body: Stack(
         children: [
           CustomScrollView(
+            physics: const BouncingScrollPhysics(),
             slivers: [
               SliverAppBar(
                 expandedHeight: 140,
                 floating: false,
                 pinned: true,
-                backgroundColor: AppColors.background,
+                backgroundColor: AppColors.mainColor,
                 elevation: 0,
-                leading: const BackButton(color: AppColors.textPrimary),
+                leading: const BackButton(color: Colors.white),
                 flexibleSpace: FlexibleSpaceBar(
                   centerTitle: true,
                   title: Text('Account Settings',
                       style: GoogleFonts.outfit(
-                        color: AppColors.textPrimary,
+                        color: Colors.white,
                         fontWeight: FontWeight.w800,
                         fontSize: 20,
-                        letterSpacing: -0.5,
                       )),
                   background: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.mainColor.withOpacity(0.1),
-                          AppColors.background
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.primaryGradient,
                     ),
                   ),
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 10),
                       _buildSectionHeader('PROFILE INFORMATION'),
                       const SizedBox(height: 16),
                       _buildEditableCard(
@@ -89,21 +82,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         _emailController,
                         Icons.email_outlined,
                       ),
-                      const SizedBox(height: 12),
-                      _buildSettingActionCard(
-                        'Phone Number',
-                        'Not set',
-                        Icons.phone_iphone_rounded,
-                      ),
                       const SizedBox(height: 32),
                       _buildSectionHeader('PREFERENCES'),
                       const SizedBox(height: 16),
-                      _buildSelectCard(
-                        'Time Zone',
-                        '(GMT+05:30) Chennai',
-                        Icons.public_rounded,
-                      ),
-                      const SizedBox(height: 12),
                       _buildSelectCard(
                         'Default Currency',
                         'INR (₹)',
@@ -118,12 +99,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       const SizedBox(height: 32),
                       _buildSectionHeader('SECURITY & PRIVACY'),
                       const SizedBox(height: 16),
-                      _buildSettingActionCard(
-                        'Password',
-                        '••••••••',
-                        Icons.lock_outline_rounded,
-                      ),
-                      const SizedBox(height: 12),
                       _buildToggleCard(
                         'Friend Suggestions',
                         'Allow Splitify to suggest you to friends',
@@ -149,8 +124,8 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       style: GoogleFonts.plusJakartaSans(
         fontSize: 11,
         fontWeight: FontWeight.w800,
-        color: AppColors.textSecondary.withOpacity(0.6),
-        letterSpacing: 2.0,
+        color: AppColors.textDisabled,
+        letterSpacing: 2,
       ),
     );
   }
@@ -158,18 +133,18 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   Widget _buildEditableCard(
       String label, TextEditingController controller, IconData icon) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.mainColor.withOpacity(0.1),
+              color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 20, color: AppColors.mainColor),
@@ -180,14 +155,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textDisabled,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800)),
                 TextField(
                   controller: controller,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                  style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w700,
                       fontSize: 16,
                       color: AppColors.textPrimary),
                   decoration: const InputDecoration(
@@ -206,64 +181,20 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildSettingActionCard(String label, String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.background.withOpacity(0.5),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 20, color: AppColors.textSecondary),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
-                const SizedBox(height: 2),
-                Text(value,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: AppColors.textPrimary)),
-              ],
-            ),
-          ),
-          Icon(Icons.arrow_forward_ios_rounded,
-              size: 14, color: AppColors.textSecondary.withOpacity(0.4)),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSelectCard(String label, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.background.withOpacity(0.5),
+              color: AppColors.surface,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 20, color: AppColors.textSecondary),
@@ -274,21 +205,21 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: TextStyle(
-                        color: AppColors.textSecondary.withOpacity(0.7),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600)),
+                    style: GoogleFonts.plusJakartaSans(
+                        color: AppColors.textDisabled,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800)),
                 const SizedBox(height: 2),
                 Text(value,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w700,
                         fontSize: 16,
                         color: AppColors.textPrimary)),
               ],
             ),
           ),
-          const Icon(Icons.keyboard_arrow_down_rounded,
-              color: AppColors.textSecondary),
+          Icon(Icons.keyboard_arrow_down_rounded,
+              color: AppColors.textDisabled),
         ],
       ),
     );
@@ -299,16 +230,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.background.withOpacity(0.5),
+              color: AppColors.surface,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, size: 20, color: AppColors.textSecondary),
@@ -319,21 +250,23 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
                         color: AppColors.textPrimary)),
                 const SizedBox(height: 2),
                 Text(subtitle,
-                    style: TextStyle(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 11,
-                        color: AppColors.textSecondary.withOpacity(0.6))),
+                        color: AppColors.textDisabled,
+                        fontWeight: FontWeight.w500)),
               ],
             ),
           ),
           Switch.adaptive(
             value: value,
             onChanged: (v) {},
+            activeTrackColor: AppColors.mainColor.withOpacity(0.3),
             activeColor: AppColors.mainColor,
           ),
         ],
@@ -348,10 +281,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              AppColors.background.withOpacity(0.0),
-              AppColors.background
-            ],
+            colors: [Colors.white.withOpacity(0.0), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -366,8 +296,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             padding: EdgeInsets.zero,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            elevation: 10,
-            shadowColor: AppColors.mainColor.withOpacity(0.4),
+            elevation: 0,
           ),
           child: Ink(
             decoration: BoxDecoration(
@@ -377,11 +306,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             child: Container(
               height: 60,
               alignment: Alignment.center,
-              child: const Text('Save Changes',
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white)),
+              child: Text('SAVE CHANGES',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1)),
             ),
           ),
         ),
